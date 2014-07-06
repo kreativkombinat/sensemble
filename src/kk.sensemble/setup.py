@@ -20,7 +20,7 @@ setup(name='kk.sensemble',
       url='http://dist.ade25.de',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=['example'],
+      namespace_packages=['kk'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[

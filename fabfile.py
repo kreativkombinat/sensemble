@@ -15,9 +15,9 @@ env.port = '22222'
 env.user = 'root'
 env.hosts = ['6zu4']
 env.webserver = '/opt/webserver/buildout.webserver'
-env.code_root = '/opt/sites/plonesite/buildout.plonesite'
-env.local_root = '/Users/sd/dev/blueprint/ade25.blueprint'
-env.sitename = 'plonesite'
+env.code_root = '/opt/sites/sensemble/buildout.sensemble'
+env.local_root = '/Users/sd/dev/sensemble/buildout.sensemble'
+env.sitename = 'sensemble'
 env.code_user = 'root'
 env.prod_user = 'www'
 
