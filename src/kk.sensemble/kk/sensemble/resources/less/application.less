@@ -2,13 +2,19 @@
 // Application stylesheet
 // -----------------------------------------------
 
-.app-toolbar + .app-navbar {
+.app-toolbar + .app-brandbar {
     margin-top: @navbar-height;
 }
 
 .app-header {
     .jumbotron();
     display: none;
+}
+
+.documentFirstHeading {
+    background: @app-primary;
+    padding: ceil(@line-height-computed / 2);
+    color: white;
 }
 
 .app-sign {
@@ -41,4 +47,17 @@
     .icon-bar + .icon-bar {
         margin-top: 4px;
     }
+}
+
+.poll-data {
+    padding: @line-height-computed;
+}
+
+.total-votes {
+    text-transform: uppercase;
+    margin-bottom: @line-height-computed;
+}
+
+.legendLabel {
+    padding-left: @line-height-computed;
 }

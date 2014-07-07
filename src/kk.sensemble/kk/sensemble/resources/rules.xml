@@ -104,7 +104,7 @@
             css:theme-children="#app-sidebar-right" />
         <!-- example for the fixed.html template -->
         <replace css:content-children="#portal-column-two > *"
-            css:theme-children="#app-sidebar" />
+            css:theme-children="#app-col-sidebar" />
 
     </rules>
 

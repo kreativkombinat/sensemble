@@ -11,20 +11,22 @@
     <a class="sr-only" href="#content">Skip navigation</a>
     {% include toolbar.html %}
     <!-- App master nav -->
-    {% include navbar.html %}
     {% include brandbar.html %}
-
-    <div class="app-header">
-      <div class="container">
-        <h1>{{ page.title }}</h1>
-        <p>{{ page.lead }}</p>
-      </div>
-    </div>
+    
 
     <div class="container">
-        <div role="main">
-          {{ content }}
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+          <aside class="app-tile app-sidebar" id="app-col-sidebar">
+              <h2>Sidebar</h2>
+          </aside>
         </div>
+        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8" id="app-col-content">
+          <div role="main">
+            {{ content }}
+          </div>
+        </div>
+      </div>
     </div>
     
     {% include footer.html %}

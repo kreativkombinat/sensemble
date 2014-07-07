@@ -4,7 +4,7 @@
 module.exports = function (grunt) {
 
     // load all grunt tasks
-    require('load-grunt-tasks')(grunt);
+    require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
     // Project configuration.
     grunt.initConfig({
@@ -12,13 +12,13 @@ module.exports = function (grunt) {
         // Metadata.
         pkg: grunt.file.readJSON('package.json'),
         banner: '/*!\n' +
-                  '* <%= pkg.name %> v<%= pkg.version %> by Ade25\n' +
+                  '* sensemble v<%= pkg.version %> by KK\n' +
                   '* Copyright <%= pkg.author %>\n' +
                   '* Licensed under <%= pkg.licenses %>.\n' +
                   '*\n' +
                   '* Designed and built by ade25\n' +
                   '*/\n',
-        jqueryCheck: 'if (typeof jQuery === "undefined") { throw new Error(\"We require jQuery\") }\n\n',
+        jqueryCheck: 'if (!jQuery) { throw new Error(\"Bootstrap requires jQuery\") }\n\n',
 
         // Task configuration.
         clean: {
@@ -47,22 +47,19 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: [
-                    'bower_components/jquery/jquery.js',
+                    'bower_components/jquery/dist/jquery.js',
                     'bower_components/modernizr/modernizr.js',
                     'bower_components/bootstrap/dist/js/bootstrap.js',
-                    'bower_components/holderjs/holder.js',
-                    'bower_components/jquery-pjax/jquery.pjax.js',
-                    'js/main.js'
+                    'js/application.js'
                 ],
                 dest: 'dist/js/<%= pkg.name %>.js'
             },
             theme: {
                 src: [
                     'bower_components/bootstrap/dist/js/bootstrap.js',
-                    'bower_components/jquery-pjax/jquery.pjax.js',
-                    'js/main.js'
+                    'js/application.js'
                 ],
-                dest: 'dist/js/main.js'
+                dest: 'dist/js/application.js'
             }
         },
 
@@ -73,23 +70,6 @@ module.exports = function (grunt) {
             dist: {
                 src: ['<%= concat.dist.dest %>'],
                 dest: 'dist/js/<%= pkg.name %>.min.js'
-            }
-        },
-
-        recess: {
-            options: {
-                compile: true
-            },
-            theme: {
-                src: ['less/styles.less'],
-                dest: 'dist/css/styles.css'
-            },
-            min: {
-                options: {
-                    compress: true
-                },
-                src: ['less/styles.less'],
-                dest: 'dist/css/styles.min.css'
             }
         },
 
@@ -136,20 +116,31 @@ module.exports = function (grunt) {
                 src: ['font-awesome/fonts/*'],
                 dest: 'dist/assets/fonts/'
             },
-            ico: {
-                expand: true,
-                flatten: true,
-                cwd: 'bower_components/',
-                src: ['bootstrap/assets/ico/*'],
-                dest: 'dist/assets/ico/'
-            },
             images: {
                 expand: true,
                 flatten: true,
                 src: ['assets/img/*'],
                 dest: 'dist/assets/img/'
+            },
+            ico: {
+                expand: true,
+                flatten: true,
+                src: ['assets/ico/*'],
+                dest: 'dist/assets/ico/'
             }
         },
+
+        imagemin: {
+            dynamic: {
+                files: [{
+                    expand: true,
+                    cwd: 'assets/img/',
+                    src: ['**/*.{png,jpg,gif}'],
+                    dest: 'dist/assets/img/'
+                }]
+            }
+        },
+
         rev: {
             options:  {
                 algorithm: 'sha256',
@@ -179,36 +170,34 @@ module.exports = function (grunt) {
         },
 
         sed: {
-            'clean-source-assets': {
+            cleanSourceAssets: {
                 path: 'dist/',
                 pattern: '../../assets/',
                 replacement: '../assets/',
                 recursive: true
             },
-            'clean-source-css': {
+            cleanSourceCss: {
                 path: 'dist/',
                 pattern: '../dist/css/styles.css',
                 replacement: 'css/styles.css',
                 recursive: true
             },
-            'clean-source-js': {
+            cleanSourceJs: {
                 path: 'dist/',
-                pattern: '../dist/js/rms.js',
-                replacement: 'js/rms.min.js',
+                pattern: '../dist/js/sensemble.js',
+                replacement: 'js/sensemble.js.min',
                 recursive: true
+            },
+            cleanLogo: {
+                path: 'dist/theme.html',
+                pattern: '../assets/img/sensemble.png',
+                replacement: '++theme++kk.sensemble/dist/assets/img/sensemble.png',
             }
         },
 
         validation: {
             options: {
-                charset: 'utf-8',
-                doctype: 'HTML5',
-                failHard: true,
-                reset: true,
-                relaxerror: [
-                    'Bad value X-UA-Compatible for attribute http-equiv on element meta.',
-                    'Element img is missing required attribute src.'
-                ]
+                reset: true
             },
             files: {
                 src: ['_site/**/*.html']
@@ -216,25 +205,25 @@ module.exports = function (grunt) {
         },
 
         watch: {
-            src: {
-                files: '<%= jshint.src.src %>',
-                tasks: ['jshint:src', 'qunit']
-            },
-            test: {
-                files: '<%= jshint.test.src %>',
-                tasks: ['jshint:test', 'qunit']
+            scripts: {
+                files: ['js/*.js'],
+                tasks: ['concat', 'uglify'],
+                options: {
+                    spawn: false
+                }
             },
             recess: {
                 files: 'less/*.less',
-                tasks: ['recess']
+                tasks: ['recess'],
+                options: {
+                    spawn: false
+                }
+            },
+            templates: {
+                files: '*.html',
+                tasks: ['jekyll:theme']
             }
-        },
-
-        concurrent: {
-            cj: ['less', 'copy', 'concat', 'uglify'],
-            ha: ['jekyll:theme', 'copy-templates', 'sed']
         }
-
     });
 
     // -------------------------------------------------
@@ -242,14 +231,11 @@ module.exports = function (grunt) {
     // Run them in the Terminal like e.g. grunt dist-css
     // -------------------------------------------------
 
-    // Prepare distrubution
-    grunt.registerTask('dist-init', '', function () {
-        grunt.file.mkdir('dist/assets/');
-    });
 
     // Copy jekyll generated templates and rename for diazo
     grunt.registerTask('copy-templates', '', function () {
         grunt.file.copy('_site/index.html', 'dist/theme.html');
+        //grunt.file.copy('_site/frontpage/index.html', 'dist/frontpage.html');
         grunt.file.copy('_site/signin/index.html', 'dist/signin.html');
     });
 
@@ -287,6 +273,9 @@ module.exports = function (grunt) {
 
     // Full distribution task.
     grunt.registerTask('dist', ['clean', 'dist-css', 'dist-js', 'dist-html', 'dist-assets']);
+
+    // Shim theme compilation alias
+    grunt.registerTask('compile-theme', ['dist']);
 
     // Default task.
     grunt.registerTask('default', ['dev']);
