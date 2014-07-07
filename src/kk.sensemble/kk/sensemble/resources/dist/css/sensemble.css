@@ -15304,4 +15304,23 @@ dl.portlet ul.navTree .navTreeCurrentItem
 {
     padding-left: 22px;
 }
+#content-core input
+{
+    margin: 10px !important;
+}
+button,
+html input[type='button'],
+input[type='reset'],
+input[type='submit']
+{
+    padding: 11px;
+
+    cursor: pointer;
+    text-transform: uppercase;
+
+    color: white;
+    border: 0;
+    border-radius: 4px;
+    background: #97180a;
+}
 /*# sourceMappingURL=sensemble.css.map */
