@@ -15300,9 +15300,7 @@ dl.portlet ul.navTree .navTreeCurrentItem
 }
 .total-votes
 {
-    margin-bottom: 22px;
-
-    text-transform: uppercase;
+    display: none;
 }
 .legendLabel
 {
